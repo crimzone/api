@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   version: 1.0.0
   title: crimzone
-  description: Describes the crimzone service, used for looking up crimes.
+  description: The crimzone service, used for looking up crimes.
   termsOfService: N/A
   contact:
     name: Gustav Karlsson
@@ -11,7 +11,6 @@ info:
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-host: nothing.yet
 basePath: /api
 schemes:
   - http
@@ -36,6 +35,39 @@ paths:
           description: crime response
           schema:
             $ref: '#/definitions/FullCrime'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /crimes:
+    get:
+      description: Returns all crimes matching the search parameters
+      operationId: find
+      parameters:
+        - name: query
+          in: query
+          description: text search query
+          required: false
+          type: string
+        - name: minTime
+          in: query
+          description: earliest possible time of the crimes to return
+          required: false
+          type: string
+          format: date-time
+        - name: maxTime
+          in: query
+          description: latest possible time of the crimes to return
+          required: false
+          type: string
+          format: date-time
+      responses:
+        200:
+          description: crimes response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/BasicCrime'
         default:
           description: unexpected error
           schema:
