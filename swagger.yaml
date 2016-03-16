@@ -20,8 +20,9 @@ produces:
   - application/json
 paths:
   /crimes/{id}:
-    x-swagger-router-controller: se.crimzone.service.controllers.CrimesController
     get:
+      tags:
+        - crimes
       description: Returns a crime based on a single ID
       operationId: findById
       parameters:
@@ -41,8 +42,9 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   /crimes:
-    x-swagger-router-controller: se.crimzone.service.controllers.CrimesController
     get:
+      tags:
+        - crimes
       description: Returns all crimes matching the search parameters
       operationId: find
       parameters:
