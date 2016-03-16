@@ -20,6 +20,7 @@ produces:
   - application/json
 paths:
   /crimes/{id}:
+    x-swagger-router-controller: se.crimzone.service.controllers.CrimesController
     get:
       description: Returns a crime based on a single ID
       operationId: findById
@@ -40,6 +41,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   /crimes:
+    x-swagger-router-controller: se.crimzone.service.controllers.CrimesController
     get:
       description: Returns all crimes matching the search parameters
       operationId: find
