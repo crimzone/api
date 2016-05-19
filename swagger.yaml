@@ -34,11 +34,11 @@ paths:
           format: int64
       responses:
         200:
-          description: crime response
+          description: A single Crime response
           schema:
             $ref: '#/definitions/Crime'
         default:
-          description: unexpected error
+          description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
   /crimes:
@@ -48,36 +48,40 @@ paths:
       description: Returns all crimes matching the search parameters
       operationId: find
       parameters:
-        - name: query
+        - name: zoom
           in: query
-          description: text search query
+          description: Zoom level (as described in https://developers.google.com/maps/documentation/static-maps/intro#Zoomlevels)
+          required: true
+          type: integer
+          format: int32
+        - name: text
+          in: query
+          description: Text to match
           required: false
           type: string
         - name: minTime
           in: query
-          description: earliest possible time of the crimes to return
+          description: Earliest possible time of the crimes to return
           required: false
           type: string
           format: date-time
         - name: maxTime
           in: query
-          description: latest possible time of the crimes to return
+          description: Latest possible time of the crimes to return
           required: false
           type: string
           format: date-time
       responses:
         200:
-          description: crimes response
+          description: Individual crimes and clusters of crimes (depending on the server)
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/CrimeLocation'
+            $ref: '#/definitions/Crimes'
         default:
-          description: unexpected error
+          description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
 definitions:
-  CrimeLocation:
+  Crime:
     properties:
       id:
         type: integer
@@ -88,14 +92,6 @@ definitions:
       longitude:
         type: number
         format: double
-    required:
-      - id
-      - latitude
-      - longitude
-  Crime:
-    allOf:
-      - $ref: '#/definitions/CrimeLocation'
-    properties:
       time:
         type: string
         format: date-time
@@ -104,8 +100,40 @@ definitions:
       description:
         type: string
     required:
+      - id
+      - latitude
+      - longitude
       - time
+      - title
       - description
+  CrimeCluster:
+    properties:
+      latitude:
+        type: number
+        format: double
+      longitude:
+        type: number
+        format: double
+      count:
+        type: integer
+        format: int64
+    required:
+      - latitude
+      - longitude
+      - count
+  Crimes:
+    properties:
+      individual:
+        type: array
+        items:
+          $ref: '#/definitions/Crime'
+      clusters:
+        type: array
+        items:
+          $ref: '#/definitions/CrimeCluster'
+    required:
+      - individual
+      - clusters
   Error:
     properties:
       code:
