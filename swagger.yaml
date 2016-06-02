@@ -83,7 +83,7 @@ paths:
 definitions:
   Crime:
     properties:
-      id:
+      _id:
         type: integer
         format: int64
       latitude:
@@ -100,7 +100,7 @@ definitions:
       description:
         type: string
     required:
-      - id
+      - _id
       - latitude
       - longitude
       - time
