@@ -45,32 +45,13 @@ paths:
     get:
       tags:
         - crimes
-      description: Returns all crimes matching the search parameters
-      operationId: find
-      parameters:
-        - name: zoom
-          in: query
-          description: Zoom level (as described in https://developers.google.com/maps/documentation/static-maps/intro#Zoomlevels)
-          required: true
-          type: integer
-          format: int32
-        - name: text
-          in: query
-          description: Text to match
-          required: false
-          type: string
-        - name: minTime
-          in: query
-          description: Earliest possible time of the crimes to return
-          required: false
-          type: string
-          format: date-time
-        - name: maxTime
-          in: query
-          description: Latest possible time of the crimes to return
-          required: false
-          type: string
-          format: date-time
+      description: |
+        Gets all crimes as a base64 encoded byte array where each crime is 16 bytes long.
+        Bytes 1-4: id of the crime as a signed int.
+        Bytes 5-8: number of seconds since the epoch as a signed int.
+        Bytes 9-12: latitude as a float.
+        Bytes 13-16: longitude as a float.Returns all crimes in the database, formatted as a base64 string
+      operationId: getAll
       responses:
         200:
           description: Individual crimes and clusters of crimes (depending on the server)
@@ -85,55 +66,35 @@ definitions:
     properties:
       _id:
         type: integer
-        format: int64
+        format: int32
+      time:
+        type: integer
+        format: int32
+        description: "number of seconds since the epoch"
       latitude:
         type: number
-        format: double
+        format: float
       longitude:
         type: number
-        format: double
-      time:
-        type: string
-        format: date-time
+        format: float
       title:
         type: string
       description:
         type: string
     required:
       - _id
+      - time
       - latitude
       - longitude
-      - time
       - title
       - description
-  CrimeCluster:
-    properties:
-      latitude:
-        type: number
-        format: double
-      longitude:
-        type: number
-        format: double
-      count:
-        type: integer
-        format: int64
-    required:
-      - latitude
-      - longitude
-      - count
   Crimes:
     properties:
-      individual:
-        type: array
-        items:
-          $ref: '#/definitions/Crime'
-      clusters:
-        type: array
-        items:
-          $ref: '#/definitions/CrimeCluster'
+      data:
+        type: string
+        format: binary
     required:
-      - individual
-      - clusters
+      - data
   Error:
     properties:
       code:
