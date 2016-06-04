@@ -23,7 +23,7 @@ paths:
     get:
       tags:
         - crimes
-      description: Returns a crime based on a single ID
+      description: Finds a crime based on a single ID
       operationId: findById
       parameters:
         - name: id
@@ -34,33 +34,27 @@ paths:
           format: int32
       responses:
         200:
-          description: A single Crime response
+          description: A single crime
           schema:
             $ref: '#/definitions/Crime'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+        404:
+          description: A Not Found error (404) indicating that a crime with that ID could not be found
   /crimes:
     get:
       tags:
         - crimes
-      description: |
-        Gets all crimes as a base64 encoded byte array where each crime is 16 bytes long.
-        Bytes 1-4: id of the crime as a signed int.
-        Bytes 5-8: number of seconds since the epoch as a signed int.
-        Bytes 9-12: latitude as a float.
-        Bytes 13-16: longitude as a float.Returns all crimes in the database, formatted as a base64 string
+      description: Gets all crimes as a base64 encoded byte array of id's, times and coordinates.
       operationId: getAll
       responses:
         200:
-          description: Individual crimes and clusters of crimes (depending on the server)
+          description: |
+            A single base64 encoded byte array of id's, times and coordinates. Each crime takes up 16 bytes.
+            Bytes 1-4: id of the crime as a signed int.
+            Bytes 5-8: time, as the number of seconds (note, not milliseconds) since the epoch as a signed int.
+            Bytes 9-12: latitude as a float.
+            Bytes 13-16: longitude as a float.
           schema:
             $ref: '#/definitions/Crimes'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
 definitions:
   Crime:
     properties:
@@ -94,13 +88,3 @@ definitions:
         format: byte
     required:
       - data
-  Error:
-    properties:
-      code:
-        type: integer
-        format: int32
-      message:
-        type: string
-    required:
-      - code
-      - message
