@@ -70,7 +70,6 @@ definitions:
       time:
         type: integer
         format: int32
-        description: "number of seconds since the epoch"
       latitude:
         type: number
         format: float
