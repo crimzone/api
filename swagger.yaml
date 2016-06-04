@@ -91,7 +91,7 @@ definitions:
     properties:
       data:
         type: string
-        format: binary
+        format: byte
     required:
       - data
   Error:
