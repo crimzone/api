@@ -64,12 +64,8 @@ definitions:
       time:
         type: integer
         format: int32
-      latitude:
-        type: number
-        format: float
-      longitude:
-        type: number
-        format: float
+      location:
+        $ref: '#/definitions/GeoJsonPoint'
       title:
         type: string
       description:
@@ -77,8 +73,7 @@ definitions:
     required:
       - _id
       - time
-      - latitude
-      - longitude
+      - location
       - title
       - description
   Crimes:
@@ -88,3 +83,19 @@ definitions:
         format: byte
     required:
       - data
+  GeoJsonPoint:
+    properties:
+      type:
+        type: string
+        pattern: '^Point$'
+      coordinates:
+        type: array
+        minItems: 2
+        maxItems: 2
+        items:
+          type: number
+          format: float
+        description: '[longitude, latitude]'
+    required:
+      - type
+      - coordinates
