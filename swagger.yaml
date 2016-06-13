@@ -31,7 +31,7 @@ paths:
           description: ID of crime to fetch
           required: true
           type: integer
-          format: int32
+          format: int64
       responses:
         200:
           description: A single crime
@@ -43,16 +43,37 @@ paths:
     get:
       tags:
         - crimes
-      description: Gets all crimes as a base64 encoded byte array of id's, times and coordinates.
-      operationId: getAll
+      description: Returns all crimes matching the search parameters
+      operationId: find
+      parameters:
+        - name: text
+          in: query
+          description: Text to match
+          required: false
+          type: string
+        - name: bounds
+          in: query
+          description: 'A GeoJSON Polygon representing the bounds in which crimes will be searched (see http://geojson.org/geojson-spec.html#polygon)'
+          required: false
+          type: array
+          items:
+            type: number
+            format: double
+        - name: minTime
+          in: query
+          description: Earliest possible time of the crimes to return
+          required: false
+          type: string
+          format: date-time
+        - name: maxTime
+          in: query
+          description: Latest possible time of the crimes to return
+          required: false
+          type: string
+          format: date-time
       responses:
         200:
-          description: |
-            A single base64 encoded byte array of id's, times and coordinates. Each crime takes up 16 bytes.
-            Bytes 1-4: id of the crime as a signed int.
-            Bytes 5-8: time, as the number of seconds (note, not milliseconds) since the epoch as a signed int.
-            Bytes 9-12: latitude as a float.
-            Bytes 13-16: longitude as a float.
+          description: Individual crimes and clusters of crimes (depending on the server)
           schema:
             $ref: '#/definitions/Crimes'
 definitions:
@@ -60,10 +81,10 @@ definitions:
     properties:
       _id:
         type: integer
-        format: int32
+        format: int64
       time:
-        type: integer
-        format: int32
+        type: string
+        format: date-time
       location:
         $ref: '#/definitions/GeoJsonPoint'
       title:
@@ -76,13 +97,29 @@ definitions:
       - location
       - title
       - description
+  CrimeCluster:
+    properties:
+      location:
+        $ref: '#/definitions/GeoJsonPoint'
+      count:
+        type: integer
+        format: int64
+    required:
+      - location
+      - count
   Crimes:
     properties:
-      data:
-        type: string
-        format: byte
+      individual:
+        type: array
+        items:
+          $ref: '#/definitions/Crime'
+      clusters:
+        type: array
+        items:
+          $ref: '#/definitions/CrimeCluster'
     required:
-      - data
+      - individual
+      - clusters
   GeoJsonPoint:
     properties:
       type:
@@ -94,8 +131,8 @@ definitions:
         maxItems: 2
         items:
           type: number
-          format: float
-        description: '[longitude, latitude]'
+          format: double
+        description: 'order: [longitude, latitude]'
     required:
       - type
       - coordinates
