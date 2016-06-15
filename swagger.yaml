@@ -31,7 +31,7 @@ paths:
           description: ID of crime to fetch
           required: true
           type: integer
-          format: int64
+          format: int32
       responses:
         200:
           description: A single crime
@@ -46,19 +46,25 @@ paths:
       description: Returns all crimes matching the search parameters
       operationId: find
       parameters:
-        - name: text
-          in: query
-          description: Text to match
-          required: false
-          type: string
         - name: bounds
           in: query
-          description: 'A GeoJSON Polygon representing the bounds in which crimes will be searched (see http://geojson.org/geojson-spec.html#polygon)'
-          required: false
+          description: A GeoJSON Polygon representing the bounds in which crimes will be searched (see http://geojson.org/geojson-spec.html#polygon)
+          required: true
           type: array
           items:
             type: number
             format: double
+        - name: zoom
+          in: query
+          description: Zoom level as defined by Google Maps (see https://developers.google.com/maps/documentation/static-maps/intro#Zoomlevels)
+          required: true
+          type: integer
+          format: int32
+        - name: text
+          in: query
+          description: Text to match. Corresponds to the MongoDB $text $search field (see https://docs.mongodb.com/manual/reference/operator/query/text/#text-query-operator-behavior)
+          required: false
+          type: string
         - name: minTime
           in: query
           description: Earliest possible time of the crimes to return
@@ -76,12 +82,16 @@ paths:
           description: Individual crimes and clusters of crimes (depending on the server)
           schema:
             $ref: '#/definitions/Crimes'
+        400:
+          description: Error indicating that the search query was illegal
+          schema:
+            $ref: '#/definitions/Crimes'
 definitions:
   Crime:
     properties:
       _id:
         type: integer
-        format: int64
+        format: int32
       time:
         type: string
         format: date-time
@@ -103,7 +113,7 @@ definitions:
         $ref: '#/definitions/GeoJsonPoint'
       count:
         type: integer
-        format: int64
+        format: int32
     required:
       - location
       - count
